@@ -9,8 +9,6 @@ function Invoke-ExecUpdateRefreshToken {
     [CmdletBinding()]
     param($Request, $TriggerMetadata)
 
-    $KV = $env:WEBSITE_DEPLOYMENT_ID
-
     try {
         # Handle refresh token update
         #make sure we get the latest authentication:
@@ -33,7 +31,7 @@ function Invoke-ExecUpdateRefreshToken {
             Add-CIPPAzDataTableEntity @DevSecretsTable -Entity $Secret -Force
         } else {
             if ($env:TenantID -eq $Request.body.tenantId) {
-                Set-CippKeyVaultSecret -VaultName $kv -Name 'RefreshToken' -SecretValue (ConvertTo-SecureString -String $Request.body.refreshtoken -AsPlainText -Force)
+                Set-CippKeyVaultSecret  -Name 'RefreshToken' -SecretValue (ConvertTo-SecureString -String $Request.body.refreshtoken -AsPlainText -Force)
                 # Set environment variable to make it immediately available
                 Set-Item -Path env:RefreshToken -Value $Request.body.refreshtoken -Force
 
@@ -60,7 +58,7 @@ function Invoke-ExecUpdateRefreshToken {
                 Write-Host "$($env:TenantID) does not match $($Request.body.tenantId) - we're adding a new secret for the tenant."
                 $name = $Request.body.tenantId
                 try {
-                    Set-CippKeyVaultSecret -VaultName $kv -Name $name -SecretValue (ConvertTo-SecureString -String $Request.body.refreshtoken -AsPlainText -Force)
+                    Set-CippKeyVaultSecret  -Name $name -SecretValue (ConvertTo-SecureString -String $Request.body.refreshtoken -AsPlainText -Force)
                     # Set environment variable to make it immediately available
                     Set-Item -Path env:$name -Value $Request.body.refreshtoken -Force
                 } catch {

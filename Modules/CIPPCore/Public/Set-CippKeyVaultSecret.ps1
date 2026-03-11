@@ -7,9 +7,6 @@ function Set-CippKeyVaultSecret {
     Lightweight replacement for Set-AzKeyVaultSecret that uses REST API directly.
     Significantly faster as it doesn't require loading the Az.KeyVault module.
 
-    .PARAMETER VaultName
-    Name of the Key Vault. If not provided, derives from WEBSITE_DEPLOYMENT_ID environment variable.
-
     .PARAMETER Name
     Name of the secret to set.
 
@@ -19,15 +16,9 @@ function Set-CippKeyVaultSecret {
     .EXAMPLE
     $secret = ConvertTo-SecureString -String 'mypassword' -AsPlainText -Force
     Set-CippKeyVaultSecret -Name 'MySecret' -SecretValue $secret
-
-    .EXAMPLE
-    Set-CippKeyVaultSecret -VaultName 'mykeyvault' -Name 'RefreshToken' -SecretValue $secureToken
     #>
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory = $false)]
-        [string]$VaultName,
-
         [Parameter(Mandatory = $true)]
         [string]$Name,
 
@@ -36,14 +27,7 @@ function Set-CippKeyVaultSecret {
     )
 
     try {
-        # Derive vault name if not provided
-        if (-not $VaultName) {
-            if ($env:WEBSITE_DEPLOYMENT_ID) {
-                $VaultName = ($env:WEBSITE_DEPLOYMENT_ID -split '-')[0]
-            } else {
-                throw "VaultName not provided and WEBSITE_DEPLOYMENT_ID environment variable not set"
-            }
-        }
+        $VaultName = $env:VAULT_NAME
 
         # Get access token for Key Vault
         $token = Get-CIPPAzIdentityToken -ResourceUrl "https://vault.azure.net"

@@ -9,16 +9,14 @@ function Get-HIBPAuth {
             $DevSecretsTable = Get-CIPPTable -tablename 'DevSecrets'
             $Secret = (Get-CIPPAzDataTableEntity @DevSecretsTable -Filter "PartitionKey eq 'HIBP' and RowKey eq 'HIBP'").APIKey
         } else {
-            $VaultName = ($env:WEBSITE_DEPLOYMENT_ID -split '-')[0]
             try {
-                $Secret = Get-CippKeyVaultSecret -VaultName $VaultName -Name 'HIBP' -AsPlainText -ErrorAction Stop
+                $Secret = Get-CippKeyVaultSecret -Name 'HIBP' -AsPlainText -ErrorAction Stop
             } catch {
                 $Secret = $null
             }
 
             if ([string]::IsNullOrEmpty($Secret) -and $env:CIPP_HOSTED -eq 'true') {
-                $VaultName = 'hibp-kv'
-                $Secret = Get-CippKeyVaultSecret -VaultName $VaultName -Name 'HIBP' -AsPlainText
+                $Secret = Get-CippKeyVaultSecret -Name 'HIBP' -AsPlainText
             }
         }
         Set-Item -Path "env:$Var" -Value $APIKey -Force -ErrorAction SilentlyContinue

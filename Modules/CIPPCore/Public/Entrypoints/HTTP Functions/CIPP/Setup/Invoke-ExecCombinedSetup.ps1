@@ -56,8 +56,6 @@ function Invoke-ExecCombinedSetup {
             $Results.add($notificationResults)
         }
         if ($Request.Body.selectedOption -eq 'Manual') {
-            $KV = $env:WEBSITE_DEPLOYMENT_ID
-
             if ($env:AzureWebJobsStorage -eq 'UseDevelopmentStorage=true' -or $env:NonLocalHostAzurite -eq 'true') {
                 $DevSecretsTable = Get-CIPPTable -tablename 'DevSecrets'
                 $Secret = Get-CIPPAzDataTableEntity @DevSecretsTable -Filter "PartitionKey eq 'Secret' and RowKey eq 'Secret'"
@@ -81,19 +79,19 @@ function Invoke-ExecCombinedSetup {
                 $Results.add('Manual credentials have been set in the DevSecrets table.')
             } else {
                 if ($Request.Body.tenantId) {
-                    Set-CippKeyVaultSecret -VaultName $kv -Name 'tenantid' -SecretValue (ConvertTo-SecureString -String $Request.Body.tenantId -AsPlainText -Force)
+                    Set-CippKeyVaultSecret  -Name 'tenantid' -SecretValue (ConvertTo-SecureString -String $Request.Body.tenantId -AsPlainText -Force)
                     $Results.add('Set tenant ID in Key Vault.')
                 }
                 if ($Request.Body.applicationId) {
-                    Set-CippKeyVaultSecret -VaultName $kv -Name 'applicationid' -SecretValue (ConvertTo-SecureString -String $Request.Body.applicationId -AsPlainText -Force)
+                    Set-CippKeyVaultSecret  -Name 'applicationid' -SecretValue (ConvertTo-SecureString -String $Request.Body.applicationId -AsPlainText -Force)
                     $Results.add('Set application ID in Key Vault.')
                 }
                 if ($Request.Body.applicationSecret) {
-                    Set-CippKeyVaultSecret -VaultName $kv -Name 'applicationsecret' -SecretValue (ConvertTo-SecureString -String $Request.Body.applicationSecret -AsPlainText -Force)
+                    Set-CippKeyVaultSecret  -Name 'applicationsecret' -SecretValue (ConvertTo-SecureString -String $Request.Body.applicationSecret -AsPlainText -Force)
                     $Results.add('Set application secret in Key Vault.')
                 }
                 if ($Request.Body.RefreshToken) {
-                    Set-CippKeyVaultSecret -VaultName $kv -Name 'refreshtoken' -SecretValue (ConvertTo-SecureString -String $Request.Body.RefreshToken -AsPlainText -Force)
+                    Set-CippKeyVaultSecret  -Name 'refreshtoken' -SecretValue (ConvertTo-SecureString -String $Request.Body.RefreshToken -AsPlainText -Force)
                     $Results.add('Set refresh token in Key Vault.')
                 }
             }

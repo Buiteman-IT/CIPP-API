@@ -9,8 +9,6 @@ function Invoke-ExecCreateSAMApp {
     [CmdletBinding()]
     param($Request, $TriggerMetadata)
 
-    $KV = $env:WEBSITE_DEPLOYMENT_ID
-
     try {
         $Token = $Request.body
         if ($Token) {
@@ -91,9 +89,9 @@ function Invoke-ExecCreateSAMApp {
                 $Secret | Add-Member -MemberType NoteProperty -Name 'applicationsecret' -Value $AppPassword -Force
                 Add-CIPPAzDataTableEntity @DevSecretsTable -Entity $Secret -Force
             } else {
-                Set-CippKeyVaultSecret -VaultName $kv -Name 'tenantid' -SecretValue (ConvertTo-SecureString -String $TenantId -AsPlainText -Force)
-                Set-CippKeyVaultSecret -VaultName $kv -Name 'applicationid' -SecretValue (ConvertTo-SecureString -String $Appid.appId -AsPlainText -Force)
-                Set-CippKeyVaultSecret -VaultName $kv -Name 'applicationsecret' -SecretValue (ConvertTo-SecureString -String $AppPassword -AsPlainText -Force)
+                Set-CippKeyVaultSecret  -Name 'tenantid' -SecretValue (ConvertTo-SecureString -String $TenantId -AsPlainText -Force)
+                Set-CippKeyVaultSecret  -Name 'applicationid' -SecretValue (ConvertTo-SecureString -String $Appid.appId -AsPlainText -Force)
+                Set-CippKeyVaultSecret  -Name 'applicationsecret' -SecretValue (ConvertTo-SecureString -String $AppPassword -AsPlainText -Force)
             }
             $ConfigTable = Get-CippTable -tablename 'Config'
             #update the ConfigTable with the latest appId, for caching compare.

@@ -21,9 +21,8 @@ function Get-CIPPAuthentication {
             }
             Write-Host "Got secrets from dev storage. ApplicationID: $env:ApplicationID"
         } else {
-            $keyvaultname = ($env:WEBSITE_DEPLOYMENT_ID -split '-')[0]
             $Variables | ForEach-Object {
-                Set-Item -Path env:$_ -Value (Get-CippKeyVaultSecret -VaultName $keyvaultname -Name $_ -AsPlainText -ErrorAction Stop) -Force
+                Set-Item -Path env:$_ -Value (Get-CippKeyVaultSecret  -Name $_ -AsPlainText -ErrorAction Stop) -Force
             }
         }
         $env:SetFromProfile = $true

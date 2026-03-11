@@ -9,7 +9,6 @@ function Invoke-ExecTokenExchange {
     param($Request, $TriggerMetadata)
 
     # Get the key vault name
-    $KV = $env:WEBSITE_DEPLOYMENT_ID
     $APIName = $Request.Params.CIPPEndpoint
 
     try {
@@ -43,7 +42,7 @@ function Invoke-ExecTokenExchange {
             Write-LogMessage -API $APIName -message 'Retrieved client secret from development secrets' -Sev 'Debug'
         } else {
             try {
-                $ClientSecret = (Get-CippKeyVaultSecret -VaultName $kv -Name 'applicationsecret' -AsPlainText)
+                $ClientSecret = (Get-CippKeyVaultSecret  -Name 'applicationsecret' -AsPlainText)
                 Write-LogMessage -API $APIName -message 'Retrieved client secret from key vault' -Sev 'Debug'
             } catch {
                 Write-LogMessage -API $APIName -message "Failed to retrieve client secret: $($_.Exception.Message)" -Sev 'Error'
